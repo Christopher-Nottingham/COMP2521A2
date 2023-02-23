@@ -1,3 +1,7 @@
+/*
+COMP 2521-001: Assingment 2
+Coded by: Christopher Nottingham (Even) and Ope Lano (Odd)
+*/
 --1
 --2
 --3
