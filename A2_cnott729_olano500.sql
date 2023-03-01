@@ -37,28 +37,27 @@ location LIKE "L%2%"
 AND capacity >= 50
 GROUP BY location;
 --7
-SELECT max(INSTRUCTOR_ID) AS Total_Number_Of_Instructors
-FROM university.section, university.course
-WHERE INSTRUCTOR_ID ; **
-
+SELECT COUNT(DISTINCT section.instructor_id) AS total_number_of_instructors_who_teach_at_least_one_section_of_a_course
+From university.section;
 --8
 SELECT DISTINCT section.section_id AS sections_with_enrolllments, section.modified_date AS day_of_most_recent_enrollment
 FROM university.section, university.enrollment
 WHERE section.section_id = enrollment.section_id;
---9 CANT FIND f_Grade
-
-SELECT FIRST_NAME, LAST_NAME, course.description
-FROM university.student, university.course, university.grade
-WHERE FINAL_GRADE IS NOT NULL
-AND g.grade_type_code = "FI"; **
+--9
+SELECT section.instructor_id
+FROM section, enrollment
+WHERE section.section_id = enrollment.section_id
+AND enrollment.FINAL_GRADE IS NOT NULL;
 --10
 SELECT description AS Course_Description, prerequisite AS Course_Prerequisite
 FROM university.course
 WHERE prerequisite IS NULL;
 --11
-SELECT course.description as Course_Description, course_no as Course_Number
-FROM university.course
-WHERE prerequisite = 350; **
+SELECT course.description as Course_Description , instructor.last_name AS Instructor_Last_Name
+FROM university.course, university.section, university.instructor
+WHERE prerequisite = 350
+AND course.course_no=section.course_no
+AND section.instructor_id=instructor.instructor_id;
 --12
 SELECT g.student_id,c.description, g.grade_type_code, g.numeric_grade
 FROM university.course AS c, university.section AS sec, university.grade AS g
