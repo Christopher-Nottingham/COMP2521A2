@@ -11,7 +11,7 @@ SELECT DISTINCT YEAR(ENROLL_DATE) AS enrolled_date, YEAR(DATE_ADD(ENROLL_DATE, I
 FROM university.enrollment;
 --3
 SELECT student.student_id, enrollment.section_id,student.FIRST_NAME ,COUNT(*)
-From student, enrollment
+FROM universtiy.student, universtiy.enrollment
 WHERE student.STUDENT_ID=enrollment.STUDENT_ID
 GROUP BY student.student_id
 HAVING COUNT(*)>=3;
@@ -26,10 +26,9 @@ SELECT max(EMPLOYER) as Company, COUNT(*) as Number_Of_Students_Employed
 FROM university.student
 GROUP BY employer
 ORDER BY 2 DESC
-LIMIT 1; DONE
+LIMIT 1; 
 
 --6 
-/*NULL TABLE*/
 SELECT location, COUNT(location) AS frequency
 FROM university.section
 WHERE section_no = 3 AND
@@ -45,7 +44,7 @@ FROM university.section, university.enrollment
 WHERE section.section_id = enrollment.section_id;
 --9
 SELECT section.instructor_id
-FROM section, enrollment
+FROM universtiy.section, universtiy.enrollment
 WHERE section.section_id = enrollment.section_id
 AND enrollment.FINAL_GRADE IS NOT NULL;
 --10
@@ -66,7 +65,7 @@ AND sec.section_id = g.section_id
 AND g.student_id = 109;
 --13
 Select course.description,  grade.numeric_grade AS FINAL_EXAM_GRADE
-FROM student, zipcode, course, section, grade
+FROM universtiy.student, universtiy.zipcode, universtiy.course, universtiy.section, universtiy.grade
 WHERE zipcode.state = "NJ"
 AND course.course_no = 350
 AND course.course_no=section.course_no
@@ -88,7 +87,7 @@ WHERE section.section_id = grade_type_weight.section_id
 AND section.section_id BETWEEN 95 AND 125;
 --16
 SELECT enrollment.student_id, course.description, COUNT(course.course_no) AS duplicates, section.section_id
-FROM enrollment, section, course
+FROM universtiy.enrollment, universtiy.section, universtiy.course
 WHERE enrollment.section_id=section.section_id 
 AND course.course_no=section.course_no
 GROUP BY enrollment.student_id
