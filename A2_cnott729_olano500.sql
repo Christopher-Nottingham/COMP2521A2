@@ -8,14 +8,16 @@ FROM university.course
 WHERE prerequisite IS NULL; DONE
 --2
 SELECT DISTINCT YEAR(ENROLL_DATE) AS enrolled_date, YEAR(DATE_ADD(ENROLL_DATE, INTERVAL 4 YEAR)) AS graduation_year
-FROM enrollment;
+FROM university.enrollment;
 --3
-SELECT DISTINCT STUDENT_ID AS Full_Time_Students
-FROM university.enrollment, university.student
-WHERE enrollment.student_id = student.student_id; **
+SELECT student.student_id, enrollment.section_id,student.FIRST_NAME ,COUNT(*)
+From student, enrollment
+WHERE student.STUDENT_ID=enrollment.STUDENT_ID
+GROUP BY student.student_id
+HAVING COUNT(*)>=3;
 --4
 SELECT MIN(grade.numeric_grade) AS minimum_grade, AVG(grade.numeric_grade) AS average_grade, MAX(grade.numeric_grade) AS max_grade
-FROM section, grade
+FROM university.section, university.grade
 WHERE section.section_id = 141 AND 
 grade.section_id = section.section_id;
 
@@ -26,9 +28,10 @@ GROUP BY employer
 ORDER BY 2 DESC
 LIMIT 1; DONE
 
---6
+--6 
+/*NULL TABLE*/
 SELECT location, COUNT(location) AS frequency
-FROM section
+FROM university.section
 WHERE section_no = 3 AND
 location LIKE "L%2%"
 AND capacity >= 50
@@ -42,26 +45,35 @@ WHERE INSTRUCTOR_ID ; **
 SELECT DISTINCT section.section_id AS sections_with_enrolllments, section.modified_date AS day_of_most_recent_enrollment
 FROM university.section, university.enrollment
 WHERE section.section_id = enrollment.section_id;
---9
+--9 CANT FIND f_Grade
 
 SELECT FIRST_NAME, LAST_NAME, course.description
 FROM university.student, university.course, university.grade
-WHERE F_GRADE IS NOT NULL; **
+WHERE FINAL_GRADE IS NOT NULL
+AND g.grade_type_code = "FI"; **
 --10
-SELECT description as Course_Description, prerequisite AS Course_Prerequisite
-FROM course
+SELECT description AS Course_Description, prerequisite AS Course_Prerequisite
+FROM university.course
 WHERE prerequisite IS NULL;
 --11
-SELECT course.description as Course_Description, course_no as 
+SELECT course.description as Course_Description, course_no as Course_Number
 FROM university.course
 WHERE prerequisite = 350; **
 --12
 SELECT g.student_id,c.description, g.grade_type_code, g.numeric_grade
-FROM course AS c, section AS sec, grade AS g
+FROM university.course AS c, university.section AS sec, university.grade AS g
 WHERE g.grade_type_code IN ("HM","QZ")
 AND sec.section_id = g.section_id 
 AND g.student_id = 109;
 --13
+Select course.description,  grade.numeric_grade AS FINAL_EXAM_GRADE
+FROM student, zipcode, course, section, grade
+WHERE zipcode.state = "NJ"
+AND course.course_no = 350
+AND course.course_no=section.course_no
+AND grade.student_id = grade.student_id
+AND grade.grade_type_code ="FI"
+AND student.zip=zipcode.zip;
 --14
 SELECT c.description as course_name, MIN(g.numeric_grade) AS minimum_grade
 FROM university.grade AS g, university.course AS c, university.section AS s
@@ -71,11 +83,16 @@ AND g.grade_type_code = "FI"
 GROUP BY c.course_no
 ORDER BY MIN(g.numeric_grade) DESC;
 --15
+SELECT section.SECTION_ID, GRADE_TYPE_CODE, PERCENT_OF_FINAL_GRADE
+FROM section, grade_type_weight
+WHERE section.section_id = grade_type_weight.section_id
+AND section.section_id BETWEEN 95 AND 125;
 --16
-SELECT enrollment.student_id, course.description
-FROM section, course, enrollment
-WHERE section.course_no= course.course_no
-AND section.section_id = enrollment.section_id
-GROUP BY course.description;
-HAVING course.description>1;
-AND enrollment.student_id = 283; 
+SELECT enrollment.student_id, course.description, COUNT(course.course_no) AS duplicates, section.section_id
+FROM enrollment, section, course
+WHERE enrollment.section_id=section.section_id 
+AND course.course_no=section.course_no
+GROUP BY enrollment.student_id
+HAVING duplicates>1;
+
+
